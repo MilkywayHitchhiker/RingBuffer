@@ -6,8 +6,8 @@
 //»ý¼ºÀÚ
 CRingbuffer::CRingbuffer (void)
 {
-	pBuffer = new char[10];
-	BufferSize = 10;
+	pBuffer = new char[dfBuffSize];
+	BufferSize = dfBuffSize;
 	Front = 0;
 	Rear = 0;
 	return;

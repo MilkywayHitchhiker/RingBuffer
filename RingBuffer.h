@@ -1,5 +1,6 @@
 #pragma once
 #include <process.h>
+#include <windows.h>
 #define dfBuffSize 10000
 class CRingbuffer
 {

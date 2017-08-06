@@ -19,7 +19,11 @@ public:
 
 	// 패킷 초기화.
 	void	Initial(int iBufferSize = BUFFER_DEFAULT);
-	// 패킷  파괴.
+
+	//RefCnt를 1 증가시킴. 
+	void	Add (void);
+
+	// RefCnt를 하나 차감시키고 REfCnt가 0이 되면 자기자신 delete하고 빠져나옴.
 	void	Release(void);
 
 
@@ -94,18 +98,6 @@ public:
 	int		PutData(char *chpSrc, int iSrcSize);
 
 
-
-protected:
-	//크리티컬 섹션.
-	CRITICAL_SECTION cs;
-
-
-	//크리티컬 섹션 락
-	void Lock (void);
-	//크리티컬 섹션 락 해제
-	void Free (void);
-
-
 protected:
 
 	//------------------------------------------------------------
@@ -135,7 +127,10 @@ protected:
 	//------------------------------------------------------------
 	int		_iDataSize;
 
-
+	//------------------------------------------------------------
+	// 현재 Packet의 RefCnt
+	//------------------------------------------------------------
+	int iRefCnt;
 
 
 

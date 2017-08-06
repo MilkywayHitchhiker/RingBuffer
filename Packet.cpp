@@ -10,7 +10,6 @@ Packet::Packet() : Buffer (NULL),DataFieldStart (NULL),DataFieldEnd (NULL),ReadP
 	BufferExpansion = NULL;
 
 	Initial();
-
 	return;
 }
 
@@ -21,7 +20,6 @@ Packet::Packet(int iBufferSize) : Buffer (NULL), DataFieldStart (NULL), DataFiel
 	BufferExpansion = NULL;
 
 	Initial(iBufferSize);
-
 	return;
 }
 
@@ -35,7 +33,6 @@ Packet::Packet(const Packet &SrcPacket) : Buffer (NULL),_iBufferSize (0), DataFi
 	원본 패킷 클래스에서 복사해온다.
 	-------------------------------------------------------------------*/
 	PutData(SrcPacket.ReadPos, SrcPacket._iDataSize);
-	
 	return;
 }
 
@@ -71,7 +68,6 @@ void Packet::Initial(int iBufferSize)
 		}
 	}
 
-
 	DataFieldStart = Buffer;
 	DataFieldEnd = Buffer + _iBufferSize;
 
@@ -79,34 +75,30 @@ void Packet::Initial(int iBufferSize)
 
 	_iDataSize = 0;
 
-	//크리티컬 섹션 초기화
-	InitializeCriticalSection (&cs);
+	iRefCnt = 1;
 	
 	return;
 }
 
-
-
-//크리티컬 섹션 락
-void Packet::Lock (void)
+//RefCnt를 1 증가시킴. 
+void Packet::Add (void)
 {
-	EnterCriticalSection (&cs);
-	return;
-}
-//크리티컬 섹션 락 해제
-void Packet::Free (void)
-{
-	LeaveCriticalSection (&cs);
+	InterlockedIncrement (( volatile long * )&iRefCnt);
 	return;
 }
 
-
-
-// 패킷  파괴.
+// RefCnt를 하나 차감시키고 REfCnt가 0이 되면 자기자신 delete하고 빠져나옴.
 void Packet::Release(void)
 {
-	if ( NULL != BufferExpansion )
-		delete[] BufferExpansion;
+	if ( InterlockedDecrement((volatile long *)&iRefCnt) == 0 )
+	{
+		if ( NULL != BufferExpansion )
+		{
+			delete[] BufferExpansion;
+		}
+		delete this;
+	}
+	return;
 }
 
 

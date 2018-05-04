@@ -13,7 +13,7 @@ CRingbuffer::CRingbuffer (void)
 	Rear = 0;
 
 	//크리티컬 섹션 초기화
-	InitializeCriticalSection (&cs);
+	InitializeSRWLock (&cs);
 
 	return;
 }
@@ -26,7 +26,7 @@ CRingbuffer::CRingbuffer (int iBufferSize)
 	Rear = 0;
 
 	//크리티컬 섹션 초기화
-	InitializeCriticalSection (&cs);
+	InitializeSRWLock (&cs);
 
 	return;
 }
@@ -54,13 +54,13 @@ void CRingbuffer::Initial (int iBufferSize)
 //크리티컬 섹션 락
 void CRingbuffer::Lock (void)
 {
-	EnterCriticalSection (&cs);
+	AcquireSRWLockExclusive (&cs);
 	return;
 }
 //크리티컬 섹션 락 해제
 void CRingbuffer::Free (void)
 {
-	LeaveCriticalSection (&cs);
+	ReleaseSRWLockExclusive (&cs);
 	return;
 }
 

@@ -6,7 +6,7 @@ class CRingbuffer
 {
 protected:
 
-	CRITICAL_SECTION cs;
+	SRWLOCK cs;
 
 	char *pBuffer;
 
